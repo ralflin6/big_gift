@@ -11,21 +11,15 @@ import time
 import pandas as pd 
 import datetime 
 import openpyxl
-import logging
-loglocation=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.',"worklog",str(datetime.date.today())+"log.txt"))
-logging.basicConfig(
-    filename=loglocation,
-    level=logging.INFO,
-    format='%(asctime)s- %(filename)s-%(funcName)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger(__name__)
+from Logger import create_logger 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from openpyxl.utils.dataframe import dataframe_to_rows
 import requests
 import jiragetbug
 from argparse import ArgumentParser
+
+logger = create_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)),"worklog"), 'main_log')
 
 #endregion
 delay=0.3
@@ -134,7 +128,7 @@ def generate_report(downloadpath,targetpath,BUGdf,jiraurl=''):
             print(e)
         except:
             pass
-        print("報告生成完畢")
+        logger.info("報告生成完畢")
     except:
         logger.error("發生錯誤",exc_info=True)
     logger.warning("報告生成完畢")
