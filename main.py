@@ -187,6 +187,7 @@ def parse_args():
     parser = ArgumentParser(prog='main.py') 
     parser.add_argument('--testcase_url', '-caseurl', default='', type=str, required=False, help='testcase url')
     parser.add_argument('--jira_url', '-jurl', default='', type=str, required=False, help='jira url')
+    parser.add_argument('--filename', '-file', default='', type=str, required=False, help='file name')
     return parser.parse_args()
 
 
@@ -195,6 +196,7 @@ if __name__ == '__main__':
     args = parse_args() #從外部取值
     testcaseurl=args.testcase_url
     jiraurl=args.jira_url
+    filename=args.filename
     path='./Report' #寫死，是給 Jenkins 下載 Report 的地方
     testcase_getter(testcaseurl,'oliverchiu','!QAZ2wsx',path)
-    generate_report('./Report',"./Report/result.xlsx",jiragetbug.get_jirabug(account='oliver206',password='XD6R247L',urls=jiraurl,bugstatus=3),jiraurl=jiraurl)
+    generate_report('./Report',"./Report/"+filename+".xlsx",jiragetbug.get_jirabug(account='oliver206',password='XD6R247L',urls=jiraurl,bugstatus=3),jiraurl=jiraurl)

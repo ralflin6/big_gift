@@ -8,6 +8,7 @@ from jira import JIRA
 import pandas as pd
 import datetime
 from Logger import create_logger 
+from argparse import ArgumentParser
 
 logger = create_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)),"worklog"), 'jiragetbug')
 
@@ -47,11 +48,19 @@ def get_jirabug(account,password,urls,bugstatus,filename=''):
         
         return allbug
 
-'''
+def parse_args():
+    parser = ArgumentParser(prog='jiragetbug.py') 
+    parser.add_argument('--jira_url', '-jurl', default='', type=str, required=False, help='jira url')
+    parser.add_argument('--testcase_url', '-caseurl', default='', type=str, required=False, help='testcase url')
+    return parser.parse_args()
+
 if __name__ == "__main__":
 
 
-    envlist='https://pmo-jira.qyrc452.com/browse/CRND02-563,https://jira.dlmd40.com/browse/CRND02-564,https://jira.dlmd40.com/browse/CRND02-529'
+    #envlist='https://pmo-jira.qyrc452.com/browse/CRND02-563,https://jira.dlmd40.com/browse/CRND02-564,https://jira.dlmd40.com/browse/CRND02-529'
+
+    #allbug=get_jirabug('oliver206','XD6R247L',envlist,1,'C:\\Users\\oliverchiu\\Desktop\\packing\\jirabug-2.xlsx')
+    args = parse_args() #從外部取值
+    envlist = args.jira_url
 
     allbug=get_jirabug('oliver206','XD6R247L',envlist,1,'C:\\Users\\oliverchiu\\Desktop\\packing\\jirabug-2.xlsx')
-'''
