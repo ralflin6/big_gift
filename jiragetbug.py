@@ -6,10 +6,17 @@
 import os
 from jira import JIRA
 import pandas as pd
+import logging
 import datetime
-from Logger import create_logger 
 
-logger = create_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)),"worklog"), 'jiragetbug')
+loglocation=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir,"worklog",str(datetime.date.today())+"log.txt"))
+logging.basicConfig(
+    filename=loglocation,
+    level=logging.INFO,
+    format='%(asctime)s- %(filename)s-%(funcName)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 def get_jirabug(account,password,urls,bugstatus,filename=''):
     if urls=="":
@@ -47,11 +54,12 @@ def get_jirabug(account,password,urls,bugstatus,filename=''):
         
         return allbug
 
-'''
+
 if __name__ == "__main__":
 
 
     envlist='https://pmo-jira.qyrc452.com/browse/CRND02-563,https://jira.dlmd40.com/browse/CRND02-564,https://jira.dlmd40.com/browse/CRND02-529'
 
     allbug=get_jirabug('oliver206','XD6R247L',envlist,1,'C:\\Users\\oliverchiu\\Desktop\\packing\\jirabug-2.xlsx')
-'''
+
+    
