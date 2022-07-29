@@ -59,7 +59,7 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
         shutil.rmtree('./Chart_data_overview')
     if '.zip' in path :  #先把上傳上來的 Zip 檔案解壓縮
         from zipfile import ZipFile
-        with ZipFile(f"./{path}", 'r') as zip:
+        with ZipFile(f"./packing.zip", 'r') as zip:
             path = path.replace('.zip','')
             zip.extractall(f'./{path}') 
 
