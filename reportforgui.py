@@ -11,8 +11,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import logging
+from argparse import ArgumentParser
 
-loglocation=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir,"worklog",str(datetime.date.today())+"log.txt"))
+loglocation=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"worklog",str(datetime.date.today())+"log.txt"))
 logging.basicConfig(
     filename=loglocation,
     level=logging.INFO,
@@ -45,7 +46,7 @@ def folder(location):
 
 def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_switch=False,RTP_switch=False,averagewin_switch=False):
     """
-    path=路徑
+    path=修改為資料名稱，因為 Jenkins 不能上傳整包資料
     validbetno=有效投注欄位(預設11)
     winloseno=輸贏金額欄位(預設12)
     roomname_switch=是否開啟房間名
@@ -53,6 +54,15 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
     RTP_switch=是否開啟RTP
     averagewin_switch=是否開啟場均輸贏
     """
+    if os.path.isdir('./Chart_data_overview'): #如果原本存在就先移除，避免抓取到之前的資料
+        import shutil #如果原本存在就先移除，避免抓取到之前的資料
+        shutil.rmtree('./Chart_data_overview')
+    if '.zip' in path :  #先把上傳上來的 Zip 檔案解壓縮
+        from zipfile import ZipFile
+        with ZipFile(f"./{path}", 'r') as zip:
+            path = path.replace('.zip','')
+            zip.extractall(f'./{path}') 
+
     dic={}
     total_dic={}
     if path[-1] != "/":
@@ -64,9 +74,9 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
     if roomname_switch:
         print(realpath)
         folder(realpath.rsplit('/',2)[0]+'/'+alldata.iloc[:,4][0])
-        output_path=realpath.rsplit('/',2)[0]+'/'+alldata.iloc[:,4][0]+'/圖表資料總覽/'
+        output_path=realpath.rsplit('/',2)[0]+'/'+alldata.iloc[:,4][0]+'/Chart_data_overview/'
     else:
-        output_path=realpath.rsplit('/',2)[0]+'/圖表資料總覽/'
+        output_path=realpath.rsplit('/',2)[0]+'/Chart_data_overview/'
     folder(output_path)
     
     alldata.sort_index(axis=0,inplace=True,ascending=False)
@@ -159,9 +169,25 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
     alldata.drop(index=df.index, inplace=True)
     pass
 
-
+def parse_args():
+    parser = ArgumentParser(prog='jiragetbug.py') 
+    parser.add_argument('--file_name', '-file', default='', type=str, required=False, help='file name')
+    parser.add_argument('--para_set', '-paraset', default='', type=str, required=False, help='Parameter setting')
+    parser.add_argument('--validbetno', '-betno', default='', type=str, required=False, help='valid bet number')
+    parser.add_argument('--winloseno', '-wlno', default='', type=str, required=False, help='win lose number')
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    path="C:/Users/oliverchiu/Desktop/packing/data"
-    main(path,RTP_switch=True,averagewin_switch=True)
-    
+    #path="C:/Users/ralflin/Desktop/大禮包v1.2.6"
+    args = parse_args() #從外部取值
+    path = args.file_name #導入的資料夾名稱
+    commission_switch = RTP_switch = averagewin_switch = False
+    if '1' in args.para_set:
+        commission_switch = True
+    if '2' in args.para_set:
+        RTP_switch = True
+    if '3' in args.para_set:
+        averagewin_switch = True
+    validbetno = args.validbetno
+    winloseno = args.winloseno
+    main(path='./'+path,validbetno=validbetno,winloseno=winloseno,commission_switch=commission_switch,RTP_switch=RTP_switch,averagewin_switch=averagewin_switch)

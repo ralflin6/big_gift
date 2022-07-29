@@ -165,6 +165,11 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    #url="http://192.168.22.113:9100/default"
+    #acc="admin"
+    #pwd="123456a,"
+    #begindate="2022-07-27 12:40:00"
+    #enddate="2022-07-27 12:49:59"
     args = parse_args() #從外部取值
     url = args.backend_url
 
