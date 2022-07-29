@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import datetime
 import logging
 from argparse import ArgumentParser
+import zipfile
 
 loglocation=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"worklog",str(datetime.date.today())+"log.txt"))
 logging.basicConfig(
@@ -58,8 +59,7 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
         import shutil #如果原本存在就先移除，避免抓取到之前的資料
         shutil.rmtree('./Chart_data_overview')
     if '.zip' in path :  #先把上傳上來的 Zip 檔案解壓縮
-        from zipfile import ZipFile
-        with ZipFile(f"./packing.zip", 'r') as zip:
+        with zipfile.ZipFile(f"./packing.zip", 'r') as zip:
             path = path.replace('.zip','')
             zip.extractall(f'./{path}') 
 
@@ -168,6 +168,24 @@ def main(path,validbetno='11',winloseno='12',roomname_switch=False,commission_sw
     print('圖片輸出並貼入EXCEL完成')
     alldata.drop(index=df.index, inplace=True)
     pass
+    zip_folder('./Chart_data_overview')
+    
+def zip_folder(local_dir): # 需壓縮的資料夾名稱
+    try:
+        zip_file_name = local_dir + '.zip'
+        z = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
+        for dirpath, dirnames, filenames in os.walk(local_dir):
+            fpath = dirpath.replace(local_dir,'')
+            fpath = fpath and fpath + os.sep or ''
+            for filename in filenames:
+                z.write(os.path.join(dirpath, filename), fpath+filename)
+                logger.debug('zip success')
+        logger.info(''+ str(local_dir) +' zip success.')
+        z.close()
+        return True
+    except Exception as e:
+        logger.error(''+ str(local_dir) +' zip failed. '+ str(e) +'')
+        return False
 
 def parse_args():
     parser = ArgumentParser(prog='jiragetbug.py') 
@@ -190,4 +208,4 @@ if __name__ == "__main__":
         averagewin_switch = True
     validbetno = args.validbetno
     winloseno = args.winloseno
-    main(path='./'+path,validbetno=validbetno,winloseno=winloseno,commission_switch=commission_switch,RTP_switch=RTP_switch,averagewin_switch=averagewin_switch)
+    main(path='./'+path+'.zip',validbetno=validbetno,winloseno=winloseno,commission_switch=commission_switch,RTP_switch=RTP_switch,averagewin_switch=averagewin_switch)
